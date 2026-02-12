@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@theme {
+    --color-primary: #24A1DD;
+    --color-primary-hover: #1D4ED8;
+    --color-primary-text: #303030;
+    --color-border-black: #E0E0E0;
+    --color-border-gray: #BBBBBB;
+    --color-bg-light: #9AD4EF;
+    --color-bg-gray: #F7F7F7;
+}
+
+* {
+    font-family: "Creato Display", sans-serif !important;
+}
