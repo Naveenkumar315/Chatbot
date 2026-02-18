@@ -1,5 +1,6 @@
 import files from "../../file";
 import { useChartStore } from "../chat/store/chat.store";
+import { useUIStore } from "../chat/store/ui.store";
 import ReactionBar from "./ReactionBar";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import { useState } from "react";
@@ -7,6 +8,8 @@ import { useState } from "react";
 
 const ChatMessage = ({ message }) => {
     const isUser = message?.type === "user";
+    const { openSource } = useUIStore();
+    const { openSourceModal } = useChartStore();
 
     const [copied, setCopied] = useState(false);
 
@@ -88,6 +91,10 @@ const ChatMessage = ({ message }) => {
                             {(
                                 <div className="flex items-center gap-1 flex-shrink-0">
                                     {!isUser && (<InfoCircleOutlined
+                                        onClick={() => {
+                                            openSourceModal(message);
+                                            openSource();
+                                        }}
                                         className="text-[14px] cursor-pointer !text-yellow-400 !hover:text-yellow-600 transition"
                                     />)}
 

@@ -76,7 +76,7 @@ const ChatContainer = () => {
     return (
         <div
             ref={containerRef}
-            onScroll={handleScroll}
+            // onScroll={handleScroll}
             className="flex-1 overflow-y-auto px-6 py-4 space-y-4 bg-white scroll-smooth"
         >
             {/* Loading indicator for history */}

@@ -1,53 +1,80 @@
+import Split from "react-split";
 import ChatContainer from "./ChatContainer";
 import ChatInput from "./ChatInput";
-import SourceModal from "./SourceModal";
-import PDFViewerModal from "./PDFViewerModal";
 import DisclaimerBar from "./DisclaimerBar";
-import { StarFilled } from "@ant-design/icons";
+import { useUIStore } from "../chat/store/ui.store";
 
 import files from "../../file";
+import RightPanel from "./RightPanel";
 
 const ChatPage = () => {
-    return (
-        <div className="min-h-screen bg-gray-100 flex flex-col items-center pt-[60px] px-4">
+    const { isSplit } = useUIStore();
 
-            {/* Chat Card */}
-            <div className="w-full max-w-[750px] bg-white rounded-xl shadow-md 
-                flex flex-col overflow-hidden 
-                h-[calc(100vh-120px)]">
-
-
-                <div className="relative h-[80px] w-full overflow-hidden">
-                    <img
-                        src={files.background_light_Without_text}
-                        alt=""
-                        className="w-full h-full object-cover"
-                    />
-
-                    {/* Overlay Content */}
-                    <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
-                        <h2 className="text-4xl font-bold text-slate-800 italic">
-                            Genie <img src={files.group_} alt="Group" className="inline-block w-10" />
-                        </h2>
-                        <p className="text-sm text-slate-600 mt-2 italic font-bold">
-                            Your go-to assistant for all company policy questions.
-                        </p>
-                    </div>
+    const ChatSection = () => (
+        <div className="h-full bg-white shadow-md flex flex-col overflow-hidden">
+            {/* Header */}
+            <div className="relative h-[80px] w-full overflow-hidden flex-shrink-0">
+                <img
+                    src={files.background_light_Without_text}
+                    alt=""
+                    className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                    <h2 className="text-4xl font-bold italic text-slate-800">
+                        Genie
+                    </h2>
+                    <p className="text-sm italic font-bold text-slate-600">
+                        Your go-to assistant for all company policy questions.
+                    </p>
                 </div>
-
-
-
-                <ChatContainer />
-                <ChatInput />
-
             </div>
 
-            {/* Disclaimer aligned with card */}
+            <ChatContainer />
+            <ChatInput />
             <DisclaimerBar />
+        </div>
+    );
 
-            <SourceModal />
-            <PDFViewerModal />
+    return (
+        <div className="h-screen bg-gray-100 flex flex-col overflow-hidden">
+            {/* TOP SPACING */}
+            <div className="h-[60px] flex-shrink-0" />
 
+            {/* MAIN CONTENT AREA */}
+            <div className="flex flex-1 px-4 pb-4 overflow-hidden min-h-0 max-w-full">
+                {!isSplit ? (
+                    /* SINGLE VIEW - CHAT ONLY */
+                    <div className="w-[750px] mx-auto bg-white rounded-xl shadow-md flex flex-col h-full overflow-hidden">
+                        <ChatSection />
+                    </div>
+                ) : (
+                    /* SPLIT VIEW - CHAT + PDF/SOURCE */
+                    <Split
+                        className="flex flex-1 h-full"
+                        sizes={[50, 50]}
+                        minSize={300}
+                        maxSize={Infinity}
+                        expandToMin={false}
+                        gutterSize={4}
+                        gutterAlign="center"
+                        snapOffset={30}
+                        dragInterval={1}
+                        direction="horizontal"
+                        cursor="col-resize"
+                        style={{ width: '100%' }}
+                    >
+                        {/* LEFT PANEL - CHAT */}
+                        <div className="overflow-hidden h-full flex-shrink-0" style={{ position: 'relative' }}>
+                            <ChatSection />
+                        </div>
+
+                        {/* RIGHT PANEL - PDF/SOURCE */}
+                        <div className="bg-white border-l overflow-hidden h-full flex-shrink-0" style={{ position: 'relative' }}>
+                            <RightPanel />
+                        </div>
+                    </Split>
+                )}
+            </div>
         </div>
     );
 };

@@ -7,12 +7,8 @@ import { useSendMessage } from "../hooks/useSendMessage";
 const ChatInput = () => {
     const [input, setInput] = useState("");
     const addMessage = useChartStore((state) => state.addMessage)
-    const setTyping = useChartStore((state) => state.setTyping)
     const country = useSettingsStore((s) => s.country);
     const { mutate } = useSendMessage();
-
-
-
 
     const handleSend = () => {
         if (!input.trim()) return;

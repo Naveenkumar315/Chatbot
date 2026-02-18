@@ -12,6 +12,16 @@ import loandna from "./images/loandna_.svg"
 import copy from "./images/copy.svg"
 import send_horizontal from "./images/send-horizontal.svg"
 import group_ from "./images/Group 25.svg"
+import vector_Eye from "./images/Vector-eye.svg"
+import file_Icon from "./images/file-Icon.svg"
+import vector_Left_Arrow from "./images/vector-Left-Arrow.svg"
+import close from "./images/close.svg"
+import chevron_right from "./images/chevron-right.svg"
+import chevron_left from "./images/chevron-left.svg"
+import bg_Login_With_Logo from "./images/Dark Login with logo.svg"
+import bg_Login_Without_Logo from "./images/Dark Login without logo.svg"
+import CA_Logo_white from "./images/CA_Logo_white.svg"
+import Microsoft_Icon from "./images/Microsoft icon.svg"
 
 const files = {
     background_light_Without_text,
@@ -27,7 +37,17 @@ const files = {
     loandna,
     copy,
     send_horizontal,
-    group_
+    group_,
+    vector_Eye,
+    file_Icon,
+    vector_Left_Arrow,
+    close,
+    chevron_right,
+    chevron_left,
+    bg_Login_With_Logo,
+    bg_Login_Without_Logo,
+    CA_Logo_white,
+    Microsoft_Icon
 }
 
 

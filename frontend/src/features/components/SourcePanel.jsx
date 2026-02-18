@@ -1,88 +1,122 @@
-import { CloseOutlined, EyeOutlined } from "@ant-design/icons";
+import files from "../../file";
+import { useChartStore } from "../chat/store/chat.store";
+import { useUIStore } from "../chat/store/ui.store";
 
-const SourcePanel = ({ sources, onClose, onViewPDF }) => {
+const SourcePanel = () => {
+    const { closePanel, openPdf } = useUIStore();
+    const selectedMessage = useChartStore((s) => s.selectedMessage);
+
+    console.log('sources', selectedMessage);
+
+    const sources = selectedMessage?.source || [];
+
+    const handleOpenPdf = (src) => {
+        console.log('Opening PDF with source:', src);
+
+        // Create proper PDF data structure with fullpath
+        const pdfData = {
+            file: src.file,
+            page: src.page,
+            fullpath: src.fullpath || src.path || `${src.directory}/${src.file}` // Try multiple fields
+        };
+
+        console.log('PDF data being sent:', pdfData);
+        openPdf(pdfData);
+    };
+
     return (
-        <div className="w-[38%] bg-white rounded-xl shadow-md flex flex-col overflow-hidden animate-slideInRight">
+        <div className="h-full flex flex-col w-full overflow-hidden">
+
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-800">Sources</h3>
+            <div className="flex justify-between items-center p-4 border-b border-b-border-gray flex-shrink-0 bg-white">
+                <span className="font-semibold text-lg custom-font-jura">Sources</span>
                 <button
-                    onClick={onClose}
-                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                    aria-label="Close sources panel"
+                    onClick={closePanel}
+                    className="text-gray-500 hover:text-gray-700 text-xl leading-none cursor-pointer"
                 >
-                    <CloseOutlined className="text-gray-600 text-lg" />
+                    ✕
                 </button>
             </div>
 
-            {/* Sources List */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                {sources.map((source, index) => (
-                    <div
-                        key={index}
-                        className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
-                    >
-                        <div className="mb-3">
-                            <p className="text-sm font-medium text-gray-700 mb-1">File Name:</p>
-                            <p className="text-sm text-gray-600">{source.fileName}</p>
+            {/* Sources List - Scrollable */}
+            <div className="flex-1 bg-white overflow-y-auto">
+                <div className="p-4">
+                    {sources.length === 0 ? (
+                        <div className="text-center text-gray-500 py-8">
+                            No sources available
                         </div>
+                    ) : (
+                        sources.map((src, index) => {
+                            console.log('Source item:', src); // Debug log
 
-                        <div className="mb-3">
-                            <p className="text-sm font-medium text-gray-700 mb-1">Page No:</p>
-                            <p className="text-sm text-gray-600">{source.pageNumber}</p>
-                        </div>
+                            return (
+                                <div
+                                    key={index}
+                                    className="border border-border-gray rounded-lg p-3 mb-3 bg-white"
+                                >
+                                    {/* File Name */}
+                                    <div className="flex mb-1 text-[13px]">
+                                        <span className="w-20 text-gray-500 flex-shrink-0">
+                                            File:
+                                        </span>
+                                        <span className="font-medium text-gray-800 truncate">
+                                            {src.file || 'Unknown'}
+                                        </span>
+                                    </div>
 
-                        <div className="mb-4">
-                            <p className="text-sm font-medium text-gray-700 mb-2">View PDF:</p>
-                            <div className="flex gap-2">
-                                {source.forms?.map((form, formIndex) => (
-                                    <button
-                                        key={formIndex}
-                                        onClick={() => onViewPDF(form.url, form.name, source.pageNumber)}
-                                        className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 
-                                                 rounded-lg border border-blue-200 hover:bg-blue-100 
-                                                 transition-colors text-sm"
-                                    >
-                                        <EyeOutlined className="text-base" />
-                                        <span>{form.name}</span>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                ))}
+                                    {/* Page No */}
+                                    <div className="flex mb-3 text-[13px]">
+                                        <span className="w-20 text-gray-500 flex-shrink-0">
+                                            Page:
+                                        </span>
+                                        <span className="font-medium text-gray-800">
+                                            {src.page || 'N/A'}
+                                        </span>
+                                    </div>
 
-                {sources.length === 0 && (
-                    <div className="text-center py-12 text-gray-500">
-                        <p>No sources available</p>
-                    </div>
-                )}
-            </div>
+                                    {/* Debug: Show fullpath if available */}
+                                    {(src.fullpath || src.path) && (
+                                        <div className="flex mb-3 text-[11px] text-gray-400">
+                                            <span className="w-20 flex-shrink-0">
+                                                Path:
+                                            </span>
+                                            <span className="truncate">
+                                                {src.fullpath || src.path}
+                                            </span>
+                                        </div>
+                                    )}
 
-            {/* Footer Stats */}
-            <div className="border-t border-gray-200 px-6 py-4">
-                <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                            <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p className="text-xs text-gray-500">Timing</p>
-                            <p className="font-semibold text-gray-800">0.18 Sec</p>
-                        </div>
-                    </div>
+                                    {/* View PDF */}
+                                    <div>
+                                        <div className="text-gray-500 text-[12px] mb-1">
+                                            View PDF:
+                                        </div>
 
-                    <div className="text-right">
-                        <p className="text-xs text-gray-500">Key Search Hits</p>
-                        <p className="font-semibold text-gray-800">4.96 Sec</p>
-                    </div>
+                                        <div
+                                            onClick={() => handleOpenPdf(src)}
+                                            className="flex items-center gap-2 px-3 py-2 border border-border-gray rounded-md cursor-pointer hover:bg-gray-50 transition text-[13px]"
+                                        >
+                                            <img
+                                                src={files.file_Icon}
+                                                alt="pdf"
+                                                className="w-4 h-4 flex-shrink-0"
+                                            />
 
-                    <div className="text-right">
-                        <p className="text-xs text-gray-500">Total Hits Taken</p>
-                        <p className="font-semibold text-gray-800">5.15 Sec</p>
-                    </div>
+                                            <span className="truncate flex-1">
+                                                {src.file || 'View PDF'}
+                                            </span>
+
+                                            <img
+                                                src={files.vector_Eye}
+                                                alt="view"
+                                                className="w-4 h-4 flex-shrink-0"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })
+                    )}
                 </div>
             </div>
         </div>
