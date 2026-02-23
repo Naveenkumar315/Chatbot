@@ -5,12 +5,12 @@ const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
 export const sendReactionApi = async ({ messageId, emoji, action }) => {
     const url = `${API_URL}/api/reaction`;
     console.log("Full API URL:", url);
-    console.log("Payload:", { messageId, emoji });
-
+    console.log("Payload:", { emoji });
+    let user_id = JSON.parse(sessionStorage.user).email
     try {
         const response = await axios.post(
             url,
-            { messageId, emoji, action },
+            { message_id: messageId, reaction: emoji, user_email: user_id, action },
             {
                 headers: {
                     Authorization: `Bearer 123456789`,

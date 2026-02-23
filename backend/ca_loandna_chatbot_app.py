@@ -1,7 +1,7 @@
 # uvicorn ca_loandna_chatbot_app:app --host 0.0.0.0 --port 8003
 
 
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request, HTTPException, Depends
 from fastapi.responses import JSONResponse, FileResponse
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
@@ -20,6 +20,10 @@ import warnings
 from pydantic import PydanticDeprecatedSince20
 from pathlib import Path
 from routes.sso_login import router as sso_router
+from fastapi.security import HTTPBearer
+from services.db_service import get_db
+from services.chat_service import get_or_create_conversation, save_message, save_reaction, save_sources
+from services.db_initializer import initialize_database
 
 
 warnings.filterwarnings("ignore", category=UserWarning)
@@ -33,7 +37,15 @@ llm = 'qwen'
 # FastAPI app
 app = FastAPI()
 
+
+@app.on_event("startup")
+def startup_event():
+    initialize_database()
+
+
 app.include_router(sso_router)
+
+security = HTTPBearer()
 
 
 # Enable CORS for React frontend
@@ -105,6 +117,7 @@ print(f"✅ App startup time: {startup_duration:.2f} seconds")
 class QueryRequest(BaseModel):
     question: str
     country: str | None = None   # "India" or "US"
+    user_email: str
 
 
 @app.get("/")
@@ -115,10 +128,11 @@ async def health_check():
 
 
 @app.post("/query")
-async def chatbot_query(req: QueryRequest):
-    print("UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU")
+async def chatbot_query(req: QueryRequest, conn=Depends(get_db)):
+    print("Question received:", req.question)
     question = req.question
     country = (req.country or "").strip().upper()
+    user_email = req.user_email
 
     # Decide which index to use based on country
     if country == "INDIA":
@@ -134,6 +148,19 @@ async def chatbot_query(req: QueryRequest):
 
     print(
         f"[DEBUG] Using collection: {active_collection} for country={country}")
+
+    conversation_id = get_or_create_conversation(
+        conn,
+        user_email
+    )
+    # print(f"[DEBUG] Conversation ID: {conversation_id} for user: {user_email}")
+    save_message(
+        conn,
+        conversation_id,
+        "user",
+        question
+    )
+    conn.commit()
 
     # Build a query engine for the chosen index
     query_engine = active_index.as_query_engine(llm=llm)
@@ -178,8 +205,15 @@ async def chatbot_query(req: QueryRequest):
             "fullpath": file_path,
         })
 
+    bot_message_id = save_message(
+        conn, conversation_id, "bot", str(response), active_collection
+    )
+    save_sources(conn, bot_message_id, sources)
+    conn.commit()
+
     return JSONResponse({
         "answer": str(response),
+        "message_id": bot_message_id,
         "sources": sources,
         "timing": {
             "key search time": round(embed_end - embed_start, 2),
@@ -213,6 +247,27 @@ async def get_pdf(directory: str, filename: str):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+class ReactionRequest(BaseModel):
+    message_id: int
+    reaction: str
+    user_email: str
+    action: str      # "add" or "remove"
+
+
+@app.post("/api/reaction")
+def add_reaction(req: ReactionRequest, conn=Depends(get_db)):
+    print(f"Received reaction request: {req}")
+    save_reaction(
+        conn,
+        req.message_id,
+        req.user_email,
+        req.reaction,
+        req.action        # ← was missing
+    )
+    conn.commit()
+    return {"status": "success", "message": "Reaction saved"}
 
 
 if __name__ == "__main__":

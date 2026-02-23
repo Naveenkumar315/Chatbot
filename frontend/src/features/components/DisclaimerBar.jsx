@@ -1,9 +1,11 @@
 import files from "../../file";
 import { Tooltip } from "antd";
+import { useSettingsStore } from "../chat/store/settings.store";
 
 const DisclaimerBar = () => {
+    const theme = useSettingsStore((s) => s.theme)
     return (
-        <div className="w-full flex justify-center py-3 px-4 border-t border-gray-200">
+        <div className={`w-full flex justify-center py-3 px-4  ${theme === "light" ? " border-t border-gray-200" : "bg-bg-dark-header"}`}>
 
             <div className="w-full flex items-center justify-between text-xs">
 
@@ -26,8 +28,8 @@ const DisclaimerBar = () => {
                 </div>
 
                 {/* Right */}
-                <div className="flex items-center gap-2 text-muted">
-                    <span>Powered by</span>
+                <div className="flex items-center gap-2 text-muted ">
+                    <span className={`text-[#969696]`}>Powered by</span>
                     <img
                         src={files.loandna}
                         alt="LoanDNA"

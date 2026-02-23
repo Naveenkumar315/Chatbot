@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from "react";
 import ChatMessage from "./ChatMessage";
 import TypingIndicator from "./TypingIndicator";
 import { useChartStore } from "../chat/store/chat.store";
+import { useSettingsStore } from "../chat/store/settings.store";
 
 const ChatContainer = () => {
     const messages = useChartStore((state) => state.message);
@@ -14,6 +15,7 @@ const ChatContainer = () => {
     const [hasMore, setHasMore] = useState(true);
     const previousScrollHeight = useRef(0);
     const previousMessageCount = useRef(messages?.length || 0);
+    const theme = useSettingsStore((s) => s.theme)
 
     useEffect(() => {
         setTimeout(() => {
@@ -77,7 +79,7 @@ const ChatContainer = () => {
         <div
             ref={containerRef}
             // onScroll={handleScroll}
-            className="flex-1 overflow-y-auto px-6 py-4 space-y-4 bg-white scroll-smooth"
+            className={`flex-1 overflow-y-auto px-6 py-4 space-y-4 scroll-smooth ${theme === "dark" ? "bg-black" : "bg-white "}`}
         >
             {/* Loading indicator for history */}
             {isLoadingHistory && (

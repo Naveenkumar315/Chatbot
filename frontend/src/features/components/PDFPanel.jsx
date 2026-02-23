@@ -6,6 +6,7 @@ import axios from "axios";
 
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
+import { useSettingsStore } from "../chat/store/settings.store";
 
 // Worker from public folder
 pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
@@ -17,6 +18,7 @@ const PDFPanel = () => {
     const [pageNumber, setPageNumber] = useState(1);
     const [scale, setScale] = useState(1.1);
     const [pdfBlobUrl, setPdfBlobUrl] = useState(null);
+    const theme = useSettingsStore((s) => s.theme)
 
     // Fetch PDF when pdfData changes
     useEffect(() => {
@@ -85,14 +87,17 @@ const PDFPanel = () => {
         <div className="flex flex-col h-full bg-white w-full max-w-full overflow-hidden">
 
             {/* HEADER */}
-            <div className="flex justify-between items-center px-4 py-2 border-b border-border-gray bg-gray-50 flex-shrink-0">
+            <div className={`flex justify-between items-center px-4 py-2 border-b flex-shrink-0
+    ${theme === "light"
+                    ? "bg-gray-50 border-border-gray text-[#303030] hover:text-black"
+                    : "bg-[#141414] border-gray-700 text-[#f2f2f2]"}`}>
 
                 {/* Back */}
                 <div
                     onClick={backToSource}
                     role="button"
                     tabIndex={0}
-                    className="flex items-center gap-2 text-sm text-[#303030] hover:text-black cursor-pointer select-none"
+                    className="flex items-center gap-2 text-sm   cursor-pointer select-none"
                 >
                     <img
                         src={files.vector_Left_Arrow}
@@ -112,11 +117,13 @@ const PDFPanel = () => {
             </div>
 
             {/* CONTROL BAR */}
-            <div className="flex justify-between items-center px-4 py-2 border-b border-border-gray bg-white flex-shrink-0">
+            <div className={`flex justify-between items-center px-4 py-2 border-b flex-shrink-0
+    ${theme === "light"
+                    ? "bg-white border-border-gray text-gray-800"
+                    : "bg-bg-dark-header border-gray-700 text-[#f2f2f2]"}`}>
 
                 {/* Zoom Controls */}
                 <div className="flex items-center gap-3 w-[260px]">
-
                     <span className="text-xs w-[45px] text-right font-medium">
                         {Math.round(scale * 100)}%
                     </span>
@@ -128,12 +135,15 @@ const PDFPanel = () => {
                         step="0.05"
                         value={scale}
                         onChange={(e) => setScale(Number(e.target.value))}
-                        className="flex-1 accent-black cursor-pointer"
+                        className={`flex-1 cursor-pointer ${theme === "light" ? "accent-black" : "accent-white"}`}
                     />
 
                     <button
                         onClick={() => setScale(1.1)}
-                        className="h-7 px-3 bg-white border border-border-gray rounded text-xs hover:bg-gray-100 transition"
+                        className={`h-7 px-3 border rounded text-xs transition
+                ${theme === "light"
+                                ? "bg-white border-border-gray hover:bg-gray-100"
+                                : "bg-[#141414] border-gray-600 hover:bg-gray-700 text-[#f2f2f2]"}`}
                     >
                         Reset
                     </button>
@@ -142,11 +152,13 @@ const PDFPanel = () => {
                 {/* Page Controls */}
                 {numPages && (
                     <div className="flex items-center gap-1 text-xs">
-
                         <button
                             onClick={goPrev}
                             disabled={pageNumber <= 1}
-                            className="h-6 w-6 flex items-center justify-center border border-border-gray bg-white rounded disabled:opacity-50 hover:bg-gray-100 transition"
+                            className={`h-6 w-6 flex items-center justify-center border rounded disabled:opacity-50 transition
+                    ${theme === "light"
+                                    ? "bg-white border-border-gray hover:bg-gray-100"
+                                    : "bg-[#141414] border-gray-600 hover:bg-gray-700"}`}
                         >
                             <img src={files.chevron_left} alt="Previous" className="w-4 h-4" />
                         </button>
@@ -158,18 +170,19 @@ const PDFPanel = () => {
                         <button
                             onClick={goNext}
                             disabled={pageNumber >= numPages}
-                            className="h-6 w-6 flex items-center justify-center border border-border-gray bg-white rounded disabled:opacity-50 hover:bg-gray-100 transition"
+                            className={`h-6 w-6 flex items-center justify-center border rounded disabled:opacity-50 transition
+                    ${theme === "light"
+                                    ? "bg-white border-border-gray hover:bg-gray-100"
+                                    : "bg-[#141414] border-gray-600 hover:bg-gray-700"}`}
                         >
                             <img src={files.chevron_right} alt="Next" className="w-4 h-4" />
                         </button>
-
                     </div>
                 )}
-
             </div>
 
             {/* PDF VIEWER - Strictly contained with no layout influence */}
-            <div className="flex-1 overflow-auto bg-gray-100 w-full min-h-0" style={{ contain: 'strict' }}>
+            <div className={`flex-1 overflow-auto  w-full min-h-0 ${theme === "light" ? "bg-gray-100" : "bg-bg-dark-main"}`} style={{ contain: 'strict' }}>
                 <div className="flex justify-center items-start py-6">
                     {pdfBlobUrl && (
                         <Document

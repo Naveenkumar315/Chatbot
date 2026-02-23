@@ -20,6 +20,7 @@ export const useSendMessage = () => {
                 source: data.sources,
                 timing: data.timing,
                 collection: data.collections_used,
+                message_id: data.message_id
             })
         },
 

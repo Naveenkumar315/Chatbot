@@ -8,6 +8,7 @@ const ChatInput = () => {
     const [input, setInput] = useState("");
     const addMessage = useChartStore((state) => state.addMessage)
     const country = useSettingsStore((s) => s.country);
+    const theme = useSettingsStore((s) => s.theme);
     const { mutate } = useSendMessage();
 
     const handleSend = () => {
@@ -28,7 +29,7 @@ const ChatInput = () => {
     };
 
     return (
-        <div className="border-t border-border-black px-3 py-2 bg-bg-gray">
+        <div className={`border-t  px-3 py-2  ${theme === "light" ? "bg-bg-gray border-border-black" : "bg-bg-dark-header"}`}>
             <div className="flex items-center gap-3">
 
                 <div className="relative flex-1">
@@ -50,9 +51,9 @@ const ChatInput = () => {
                             }
                         }}
                         placeholder="Type..."
-                        className="w-full border border-border-black bg-white rounded pl-10 pr-4 h-[40px] text-sm 
+                        className={`w-full border ${theme === "light" ? "border-border-black bg-white" : "bg-bg-dark-main text-white"}  rounded pl-10 pr-4 h-[40px] text-sm 
                         focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 
-                        transition-all duration-200"
+                        transition-all duration-200`}
 
                     />
 

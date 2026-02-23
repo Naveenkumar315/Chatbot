@@ -12,6 +12,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from dotenv import load_dotenv
 from pydantic import BaseModel
 from fastapi.responses import RedirectResponse
+from services.user_repository import get_user_by_email, create_user
 
 
 router = APIRouter()
@@ -95,7 +96,9 @@ async def validate_azure_ad():
 
 @router.post("/api/SSOReplyURI", response_class=HTMLResponse)
 async def sso_reply_uri(req: Request):
+
     print("Received SSO response at /api/SSOReplyURI")
+
     form = await req.form()
     saml_response = form.get("SAMLResponse")
 
@@ -104,6 +107,7 @@ async def sso_reply_uri(req: Request):
     if not saml_response:
         raise HTTPException(status_code=400, detail="Missing SAMLResponse")
 
+    # ── Decode SAML ─────────────────────────────
     decoded_xml = base64.b64decode(saml_response).decode("utf-8")
     parsed = xmltodict.parse(decoded_xml)
 
@@ -125,94 +129,103 @@ async def sso_reply_uri(req: Request):
     )
 
     if not assertion:
-        encrypted = (
-            response.get("saml:EncryptedAssertion")
-            or response.get("saml2:EncryptedAssertion")
-            or response.get("EncryptedAssertion")
-        )
-        if encrypted:
-            raise HTTPException(
-                status_code=400,
-                detail="EncryptedAssertion received. Disable encryption or decrypt it.",
-            )
         raise HTTPException(status_code=400, detail="SAML Assertion missing")
 
+    # ── Extract Attributes ──────────────────────
     attr_stmt = (
         assertion.get("saml:AttributeStatement", {})
-        or assertion.get("saml2:AttributeStatement", {})
         or assertion.get("AttributeStatement", {})
     )
 
     attributes = (
         attr_stmt.get("saml:Attribute", [])
-        or attr_stmt.get("saml2:Attribute", [])
         or attr_stmt.get("Attribute", [])
     )
 
     if isinstance(attributes, dict):
         attributes = [attributes]
 
+    # ── Extract Email ───────────────────────────
     sso_email = None
+
     for attr in attributes:
         name = attr.get("@Name", "")
+
         if "email" in name.lower() or "mail" in name.lower():
-            attr_value = (
+            value = (
                 attr.get("saml:AttributeValue")
-                or attr.get("saml2:AttributeValue")
                 or attr.get("AttributeValue")
             )
-            print(f"Found email attribute value: {attr_value}")
 
-            if isinstance(attr_value, dict):
-                sso_email = attr_value.get("#text") or attr_value.get("text")
-            elif isinstance(attr_value, str):
-                sso_email = attr_value
-            elif isinstance(attr_value, list) and len(attr_value) > 0:
-                first_val = attr_value[0]
-                if isinstance(first_val, dict):
-                    sso_email = first_val.get("#text") or first_val.get("text")
-                else:
-                    sso_email = first_val
+            if isinstance(value, dict):
+                sso_email = value.get("#text")
+            elif isinstance(value, str):
+                sso_email = value
+            elif isinstance(value, list):
+                sso_email = value[0]
 
             if sso_email:
                 break
 
     if not sso_email:
-        print("Available attributes:", [
-              attr.get("@Name", "unknown") for attr in attributes])
         raise HTTPException(status_code=400, detail="SSO email not found")
 
+    #  Normalize email
+    sso_email = sso_email.lower().strip()
+
+    print("SSO Email:", sso_email)
+
+    # ── JIT USER CREATION ───────────────────────
+    user = get_user_by_email(sso_email)
+
+    if not user:
+        print("User not found. Creating new user...")
+        user_id = create_user(sso_email)
+        if user_id:
+            print("User created successfully")
+        else:
+            print("User creation failed")
+    else:
+        print("Existing user login")
+
+    # ── Create Temporary Token ──────────────────
     temp_token = str(uuid.uuid4())
+
     SSO_TEMP_STORE[temp_token] = {
-        "email": sso_email.lower(),
+        "email": sso_email,
         "expires": datetime.utcnow() + timedelta(seconds=SSO_TOKEN_TTL),
     }
 
-    FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:3001")
-    # frontend_url = f"{FRONTEND_URL}/sso?token={temp_token}"
-    frontend_url = f"{FRONTEND_URL}/chat"
+    # ── Redirect Frontend ───────────────────────
+    FRONTEND_URL = os.environ.get(
+        "FRONTEND_URL",
+        "http://localhost:3001"
+    )
+
+    frontend_url = f"{FRONTEND_URL}/sso?token={temp_token}"
 
     html_content = f"""
     <!DOCTYPE html>
     <html>
     <head>
         <meta http-equiv="refresh" content="0; url={frontend_url}">
-        <title>Redirecting...</title>
     </head>
     <body>
-        <p>Redirecting to chat...</p>
+        Redirecting...
         <script>
-            window.location.href = "{frontend_url}";
+            window.location.href="{frontend_url}";
         </script>
     </body>
     </html>
     """
+
     return HTMLResponse(content=html_content)
 
 
 @router.post("/sso-exchange")
 async def sso_exchange(payload: SSOVerifyModel):
     token = payload.token
+    print("token received for exchange:", token)
     if not token:
         raise HTTPException(status_code=400, detail="Token required")
 

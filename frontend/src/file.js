@@ -22,6 +22,9 @@ import bg_Login_With_Logo from "./images/Dark Login with logo.svg"
 import bg_Login_Without_Logo from "./images/Dark Login without logo.svg"
 import CA_Logo_white from "./images/CA_Logo_white.svg"
 import Microsoft_Icon from "./images/Microsoft icon.svg"
+import logo_dark from "./images/CA_Logo_dark.svg"
+import group_dark from "./images/Group 25 dark.svg"
+import bg_light_WithoutText_dark from "./images/Without text-bg-dark.svg"
 
 const files = {
     background_light_Without_text,
@@ -47,7 +50,10 @@ const files = {
     bg_Login_With_Logo,
     bg_Login_Without_Logo,
     CA_Logo_white,
-    Microsoft_Icon
+    Microsoft_Icon,
+    logo_dark,
+    group_dark,
+    bg_light_WithoutText_dark
 }
 
 

@@ -8,6 +8,10 @@
     --color-border-gray: #BBBBBB;
     --color-bg-light: #9AD4EF;
     --color-bg-gray: #F7F7F7;
+    --color-bg-main: #ffffff;
+    --color-text-main: #303030;
+    --color-bg-dark-header: #222222;
+    --color-bg-dark-main: #141414;
 }
 
 * {

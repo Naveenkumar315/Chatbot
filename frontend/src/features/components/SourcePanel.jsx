@@ -1,10 +1,12 @@
 import files from "../../file";
 import { useChartStore } from "../chat/store/chat.store";
 import { useUIStore } from "../chat/store/ui.store";
+import { useSettingsStore } from "../chat/store/settings.store";
 
 const SourcePanel = () => {
     const { closePanel, openPdf } = useUIStore();
     const selectedMessage = useChartStore((s) => s.selectedMessage);
+    const theme = useSettingsStore((s) => s.theme)
 
     console.log('sources', selectedMessage);
 
@@ -28,8 +30,10 @@ const SourcePanel = () => {
         <div className="h-full flex flex-col w-full overflow-hidden">
 
             {/* Header */}
-            <div className="flex justify-between items-center p-4 border-b border-b-border-gray flex-shrink-0 bg-white">
-                <span className="font-semibold text-lg custom-font-jura">Sources</span>
+            <div className={`flex justify-between items-center p-4 border-b border-b-border-gray flex-shrink-0 ${theme === "light" ? "bg-white" : "bg-bg-dark-main"} `}>
+                <span className={`font-semibold text-lg custom-font-jura ${theme === "light" ? "text-slate-800" : "text-[#BBBBBB]"}`}>
+                    Sources
+                </span>
                 <button
                     onClick={closePanel}
                     className="text-gray-500 hover:text-gray-700 text-xl leading-none cursor-pointer"
@@ -39,7 +43,7 @@ const SourcePanel = () => {
             </div>
 
             {/* Sources List - Scrollable */}
-            <div className="flex-1 bg-white overflow-y-auto">
+            <div className={`flex-1 ${theme === "light" ? "bg-white" : "bg-bg-dark-main"} overflow-y-auto`}>
                 <div className="p-4">
                     {sources.length === 0 ? (
                         <div className="text-center text-gray-500 py-8">
@@ -52,35 +56,35 @@ const SourcePanel = () => {
                             return (
                                 <div
                                     key={index}
-                                    className="border border-border-gray rounded-lg p-3 mb-3 bg-white"
+                                    className={`border border-border-gray rounded-lg p-3 mb-3 ${theme === "light" ? "bg-white" : "bg-bg-dark-header"} `}
                                 >
                                     {/* File Name */}
                                     <div className="flex mb-1 text-[13px]">
-                                        <span className="w-20 text-gray-500 flex-shrink-0">
+                                        <span className={`w-20 text-gray-500 flex-shrink-0 ${theme === "light" ? "text-gray-500" : "text-[#969696]"}`}>
                                             File:
                                         </span>
-                                        <span className="font-medium text-gray-800 truncate">
+                                        <span className={`font-medium truncate ${theme === "light" ? "text-gray-800" : "text-white"}`}>
                                             {src.file || 'Unknown'}
                                         </span>
                                     </div>
 
                                     {/* Page No */}
                                     <div className="flex mb-3 text-[13px]">
-                                        <span className="w-20 text-gray-500 flex-shrink-0">
+                                        <span className={`w-20 text-gray-500 flex-shrink-0 ${theme === "light" ? "text-gray-500" : "text-[#969696]"}`}>
                                             Page:
                                         </span>
-                                        <span className="font-medium text-gray-800">
+                                        <span className={`font-medium ${theme === "light" ? "text-gray-800" : "text-white"}`}>
                                             {src.page || 'N/A'}
                                         </span>
                                     </div>
 
                                     {/* Debug: Show fullpath if available */}
                                     {(src.fullpath || src.path) && (
-                                        <div className="flex mb-3 text-[11px] text-gray-400">
-                                            <span className="w-20 flex-shrink-0">
+                                        <div className="flex mb-3 text-[11px] ">
+                                            <span className={`w-20 flex-shrink-0 ${theme === "light" ? "text-gray-500" : "text-[#969696]"}`}>
                                                 Path:
                                             </span>
-                                            <span className="truncate">
+                                            <span className={`truncate ${theme === "light" ? "text-gray-500" : "text-[#BBBBBB]"}`}>
                                                 {src.fullpath || src.path}
                                             </span>
                                         </div>
@@ -88,13 +92,16 @@ const SourcePanel = () => {
 
                                     {/* View PDF */}
                                     <div>
-                                        <div className="text-gray-500 text-[12px] mb-1">
+                                        <div className={`text-[12px] mb-1 ${theme === "light" ? "text-gray-500" : "text-[#BBBBBB]"}`}>
                                             View PDF:
                                         </div>
 
                                         <div
                                             onClick={() => handleOpenPdf(src)}
-                                            className="flex items-center gap-2 px-3 py-2 border border-border-gray rounded-md cursor-pointer hover:bg-gray-50 transition text-[13px]"
+                                            className={`flex items-center gap-2 px-3 py-2 border rounded-md cursor-pointer transition text-[13px]
+                                            ${theme === "light"
+                                                    ? "border-border-gray hover:bg-gray-50 text-gray-700"
+                                                    : "border-gray-600 hover:bg-gray-700 text-[#BBBBBB]"}`}
                                         >
                                             <img
                                                 src={files.file_Icon}

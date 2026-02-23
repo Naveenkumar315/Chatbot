@@ -1,5 +1,6 @@
 import files from "../../file";
 import { useChartStore } from "../chat/store/chat.store";
+import { useSettingsStore } from "../chat/store/settings.store";
 import { useUIStore } from "../chat/store/ui.store";
 import ReactionBar from "./ReactionBar";
 import { InfoCircleOutlined } from "@ant-design/icons";
@@ -10,6 +11,7 @@ const ChatMessage = ({ message }) => {
     const isUser = message?.type === "user";
     const { openSource } = useUIStore();
     const { openSourceModal } = useChartStore();
+    const theme = useSettingsStore((s) => s.theme)
 
     const [copied, setCopied] = useState(false);
 
@@ -54,7 +56,7 @@ const ChatMessage = ({ message }) => {
                     )}
 
                     {/* Name */}
-                    <div className={`text-xs text-gray-500 mb-1 ${isUser ? "text-right" : "text-left"}`}>
+                    <div className={`text-xs ${theme === "light" ? "text-gray-500" : "text-white"}  mb-1 ${isUser ? "text-right" : "text-left"}`}>
                         {isUser ? "You" : "CA Genie"}
                     </div>
 
@@ -63,7 +65,7 @@ const ChatMessage = ({ message }) => {
                         className={`px-2 pr-5 py-1 text-[12px] rounded shadow-sm relative z-10
                         ${isUser
                                 ? "bg-primary text-white rounded-br-md"
-                                : "bg-gray-100 text-text rounded-bl-md"
+                                : `text-text rounded-bl-md ${theme === "dark" ? "bg-bg-dark-header text-white" : "bg-white "}`
                             }`}
                     >
                         {/* Copy Button */}
@@ -72,7 +74,7 @@ const ChatMessage = ({ message }) => {
 
                                 <div
                                     onClick={handleCopy}
-                                    className="absolute top-3 right-3 cursor-pointer 
+                                    className="absolute top-1 right-1 cursor-pointer 
                                 opacity-0 group-hover:opacity-100 
                                 transition-all duration-200 text-[11px] font-medium"
                                 >
@@ -85,7 +87,7 @@ const ChatMessage = ({ message }) => {
                             )
                         }
 
-                        <div className="flex items-end justify-between gap-2">
+                        <div className="flex items-end justify-between gap-2 ">
                             <span className="flex-1">{message?.text}</span>
 
                             {(
@@ -119,7 +121,7 @@ const ChatMessage = ({ message }) => {
                               opacity-0 group-hover:opacity-100 
                               transition-opacity duration-200 z-20">
                             <ReactionBar
-                                messageId={message._id}
+                                messageId={message.message_id}
                                 currentReaction={message?.reaction || null}
                             />
                         </div>
