@@ -43,7 +43,7 @@ const ChatPage = () => {
             <div className={`${!isSplit ? "h-[60px]" : "h-[50px]"} flex-shrink-0`} />
 
             {/* MAIN CONTENT AREA */}
-            <div className="flex flex-1 px-4 pb-4 overflow-hidden min-h-0 max-w-full">
+            <div className={`flex flex-1 ${!isSplit ? "px-4 pb-2" : ""}  overflow-hidden min-h-0 max-w-full`}>
                 {!isSplit ? (
                     /* SINGLE VIEW - CHAT ONLY */
                     <div className="w-[750px] mx-auto bg-white rounded-xl shadow-md flex flex-col h-full overflow-hidden">

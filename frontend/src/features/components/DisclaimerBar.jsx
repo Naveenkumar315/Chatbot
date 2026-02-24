@@ -31,9 +31,9 @@ const DisclaimerBar = () => {
                 <div className="flex items-center gap-2 text-muted ">
                     <span className={`text-[#969696]`}>Powered by</span>
                     <img
-                        src={files.loandna}
+                        src={theme === "dark" ? files.logo_dark_loan : files.logo_light_loan}
                         alt="LoanDNA"
-                        className="h-4 object-contain"
+                        className={`object-contain ${theme === "dark" ? " w-16" : " w-15"}`}
                     />
                 </div>
 

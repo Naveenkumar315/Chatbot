@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import files from "../file";
 import { useSettingsStore } from "../features/chat/store/settings.store";
-import { useModeAnimation, ThemeAnimationType } from 'react-theme-switch-animation'
+import { useModeAnimation, ThemeAnimationType } from 'react-theme-switch-animation';
 import { Sun, Moon } from "lucide-react";
 
 
@@ -13,7 +13,7 @@ const Header = () => {
     const setTheme = useSettingsStore((s) => s.setTheme)
 
     const { ref, toggleSwitchTheme } = useModeAnimation({
-        duration: 1000,
+        duration: 500,
         animationType: ThemeAnimationType.CIRCLE
     })
 

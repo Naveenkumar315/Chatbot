@@ -8,12 +8,13 @@ import bg_light_Text from './images/With text-bg.svg';
 import bg_light_WithoutText from './images/Without text-bg.svg';
 import ai_assistant from "./images/ai-assistant-logo.svg"
 import Info from "./images/Vector-Info.svg"
-import loandna from "./images/loandna_.svg"
+// import loandna from "./images/loandna_.svg"
 import copy from "./images/copy.svg"
 import send_horizontal from "./images/send-horizontal.svg"
 import group_ from "./images/Group 25.svg"
 import vector_Eye from "./images/Vector-eye.svg"
 import file_Icon from "./images/file-Icon.svg"
+import file_Icon_dark from "./images/file-Icon-dark.svg"
 import vector_Left_Arrow from "./images/vector-Left-Arrow.svg"
 import close from "./images/close.svg"
 import chevron_right from "./images/chevron-right.svg"
@@ -25,6 +26,9 @@ import Microsoft_Icon from "./images/Microsoft icon.svg"
 import logo_dark from "./images/CA_Logo_dark.svg"
 import group_dark from "./images/Group 25 dark.svg"
 import bg_light_WithoutText_dark from "./images/Without text-bg-dark.svg"
+import logo_dark_loan from "./images/twitter-profile 6.svg"
+import logo_light_loan from "./images/twitter-profile 4.svg"
+import timing_logo from "./images/Vector.svg"
 
 const files = {
     background_light_Without_text,
@@ -37,7 +41,7 @@ const files = {
     bg_light_WithoutText,
     ai_assistant,
     Info,
-    loandna,
+    // loandna,
     copy,
     send_horizontal,
     group_,
@@ -53,7 +57,11 @@ const files = {
     Microsoft_Icon,
     logo_dark,
     group_dark,
-    bg_light_WithoutText_dark
+    bg_light_WithoutText_dark,
+    logo_dark_loan,
+    logo_light_loan,
+    timing_logo,
+    file_Icon_dark
 }
 
 
