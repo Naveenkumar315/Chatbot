@@ -3,6 +3,8 @@ import { Form, Button } from "antd";
 import { useNavigate } from "react-router-dom";
 import FormField from "./FormField";
 import files from "../../file";
+import { signupUser } from "./authService";
+import { message } from "antd";
 
 const SparkleIcon = () => (
     <svg width="22" height="22" viewBox="0 0 28 28">
@@ -39,7 +41,7 @@ const SignupForm = () => {
 
             message.success("Signup successful!");
 
-            navigate("/"); // go to login
+            navigate("/");
 
         } catch (error) {
 

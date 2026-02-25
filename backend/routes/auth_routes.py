@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from datetime import datetime, timedelta
-from jose import jwt
 from passlib.context import CryptContext
+import hashlib
 from services.jwt_service import create_access_token, create_refresh_token
 
 from services.db_service import get_db
@@ -22,18 +22,32 @@ pwd_context = CryptContext(
 
 
 def hash_password(password: str):
-    return pwd_context.hash(password)
+
+    # pre-hash to avoid 72-byte bcrypt limit
+    sha256_password = hashlib.sha256(
+        password.encode("utf-8")
+    ).hexdigest()
+
+    return pwd_context.hash(sha256_password)
 
 
-def verify_password(plain, hashed):
-    return pwd_context.verify(plain, hashed)
+def verify_password(plain_password: str, hashed_password: str):
+
+    sha256_password = hashlib.sha256(
+        plain_password.encode("utf-8")
+    ).hexdigest()
+
+    return pwd_context.verify(
+        sha256_password,
+        hashed_password
+    )
 
 
 # ================= MODELS =================
 
 class SignupRequest(BaseModel):
     email: str
-    username: str
+    # username: str
     password: str
     confirm_password: str
 
@@ -47,6 +61,8 @@ class LoginRequest(BaseModel):
 
 @router.post("/signup")
 def signup(req: SignupRequest, conn=Depends(get_db)):
+
+    print(f"Signup attempt for email: {req.email}")
 
     if req.password != req.confirm_password:
         raise HTTPException(
@@ -70,11 +86,10 @@ def signup(req: SignupRequest, conn=Depends(get_db)):
     password_hash = hash_password(req.password)
 
     cursor.execute("""
-        INSERT INTO Users(email, username, password_hash)
-        VALUES (?, ?, ?)
+        INSERT INTO Users(email, password_hash)
+        VALUES (?, ?)
     """, (
         req.email,
-        req.username,
         password_hash
     ))
 
@@ -91,7 +106,7 @@ def login(req: LoginRequest, conn=Depends(get_db)):
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT id, username, password_hash
+        SELECT id, password_hash
         FROM Users
         WHERE email=?
     """, (req.email,))
@@ -104,7 +119,7 @@ def login(req: LoginRequest, conn=Depends(get_db)):
             detail="Invalid credentials"
         )
 
-    user_id, username, password_hash = user
+    user_id, password_hash = user
 
     if not verify_password(req.password, password_hash):
         raise HTTPException(
@@ -123,6 +138,5 @@ def login(req: LoginRequest, conn=Depends(get_db)):
         "access_token": access_token,
         "refresh_token": refresh_token,
         "token_type": "bearer",
-        "username": username,
         "email": req.email
     }

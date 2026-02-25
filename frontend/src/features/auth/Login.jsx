@@ -2,6 +2,8 @@ import { Form, Button } from "antd";
 import { useNavigate } from "react-router-dom";
 import FormField from "./FormField";
 import files from "../../file";
+import { loginUser } from "./authService";
+import { message } from "antd";
 
 const SparkleIcon = () => (
     <svg width="22" height="22" viewBox="0 0 28 28">
@@ -25,8 +27,39 @@ const LoginPage = () => {
         window.location.href = url;
     };
 
-    const onFinish = (values) => {
-        console.log("Login Values:", values);
+    const onFinish = async (values) => {
+        try {
+
+            message.loading({
+                content: "Logging in...",
+                key: "login"
+            });
+
+            const response = await loginUser(values);
+
+            //  store JWT
+            localStorage.setItem(
+                "token",
+                response.access_token
+            );
+
+            message.success({
+                content: "Login successful ",
+                key: "login",
+                duration: 2
+            });
+
+            navigate("/chat");
+
+        } catch (error) {
+
+            message.error({
+                content:
+                    error?.response?.data?.detail ||
+                    "Login failed",
+                key: "login"
+            });
+        }
     };
 
     return (
