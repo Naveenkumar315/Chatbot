@@ -24,6 +24,7 @@ from fastapi.security import HTTPBearer
 from services.db_service import get_db
 from services.chat_service import get_or_create_conversation, save_message, save_reaction, save_sources
 from services.db_initializer import initialize_database
+from routes.auth_routes import router as auth_router
 
 
 warnings.filterwarnings("ignore", category=UserWarning)
@@ -44,6 +45,7 @@ def startup_event():
 
 
 app.include_router(sso_router)
+app.include_router(auth_router)
 
 security = HTTPBearer()
 
