@@ -24,7 +24,7 @@ const LoginPage = () => {
             <div className="text-center mb-2">
                 <div className="flex justify-center items-center gap-2">
                     <h1 className="text-2xl font-bold italic text-gray-800">Genie</h1>
-                    <SparkleIcon />
+                    <img src={files.ai_assistant_logo} alt="logo" />
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
                     Your go-to assistant for all company policy questions
