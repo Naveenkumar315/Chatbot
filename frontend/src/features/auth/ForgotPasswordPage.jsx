@@ -27,14 +27,14 @@ const ForgotPasswordPage = () => {
                     <h1 className="text-2xl font-bold italic text-gray-800">Genie</h1>
                     <img src={files.ai_assistant_logo} alt="logo" />
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 mt-1 italic">
                     Your go-to assistant for all company policy questions
                 </p>
             </div>
 
             {/* Heading */}
             <div className="text-center mb-1">
-                <h2 className="text-3xl text-gray-800">Forgot Password</h2>
+                <h2 className="text-3xl text-gray-800 custom-font-jura ">Forgot Password</h2>
                 <p className="text-sm text-gray-400">Enter your registered email</p>
             </div>
 
@@ -43,6 +43,7 @@ const ForgotPasswordPage = () => {
                 form={form}
                 layout="vertical"
                 onFinish={onFinish}
+                requiredMark={false}
                 style={{ width: "100%" }}
             >
                 <FormField

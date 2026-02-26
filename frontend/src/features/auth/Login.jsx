@@ -2,7 +2,7 @@ import { Form, Button } from "antd";
 import { useNavigate } from "react-router-dom";
 import FormField from "./FormField";
 import files from "../../file";
-import { SparkleIcon, ArrowRightIcon } from "./AuthIcons";
+import { ArrowRightIcon } from "./AuthIcons";
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -26,14 +26,14 @@ const LoginPage = () => {
                     <h1 className="text-2xl font-bold italic text-gray-800">Genie</h1>
                     <img src={files.ai_assistant_logo} alt="logo" />
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 mt-1 italic">
                     Your go-to assistant for all company policy questions
                 </p>
             </div>
 
             {/* Heading */}
             <div className="text-center mb-1">
-                <h2 className="text-3xl text-gray-800">Log In</h2>
+                <h2 className="text-3xl text-gray-800 custom-font-jura ">Log In</h2>
                 <p className="text-sm text-gray-400">Please log in to continue</p>
             </div>
 
@@ -42,6 +42,7 @@ const LoginPage = () => {
                 form={form}
                 layout="vertical"
                 onFinish={onFinish}
+                requiredMark={false}
                 style={{ width: "100%" }}
             >
                 <FormField
@@ -100,10 +101,10 @@ const LoginPage = () => {
             {/* Microsoft */}
             <button
                 onClick={handleMicrosoftLogin}
-                className="flex items-center justify-center w-full gap-3 px-6 py-2 border border-blue-400 rounded-md bg-white hover:bg-blue-50 transition shadow-sm mb-5"
+                className="flex items-center justify-center w-full gap-3 px-6 py-2 border border-blue-400 rounded-md bg-white hover:bg-blue-50 transition shadow-sm mb-5 cursor-pointer"
             >
                 <img src={files.Microsoft_Icon} className="w-5 h-5" />
-                <span className="text-sm font-medium text-slate-700 cursor-pointer">Microsoft</span>
+                <span className="text-sm font-medium text-slate-700 ">Microsoft</span>
             </button>
 
             <p className="text-center text-sm text-gray-500">
