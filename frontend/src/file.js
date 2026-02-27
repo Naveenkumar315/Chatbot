@@ -29,6 +29,8 @@ import bg_light_WithoutText_dark from "./images/Without text-bg-dark.svg"
 import logo_dark_loan from "./images/twitter-profile 6.svg"
 import logo_light_loan from "./images/twitter-profile 4.svg"
 import timing_logo from "./images/Vector.svg"
+import lock_keyhole from "./images/lock-keyhole.svg"
+import ai_assistant_logo from "./images/Group 25.svg"
 
 const files = {
     background_light_Without_text,
@@ -61,7 +63,9 @@ const files = {
     logo_dark_loan,
     logo_light_loan,
     timing_logo,
-    file_Icon_dark
+    file_Icon_dark,
+    lock_keyhole,
+    ai_assistant_logo
 }
 
 

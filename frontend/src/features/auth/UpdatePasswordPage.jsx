@@ -1,28 +1,16 @@
-import { useState } from "react";
-import { Form, Button } from "antd";
-import { useNavigate } from "react-router-dom";
+import { Form, Button, message } from "antd";
+import { useNavigate, useLocation } from "react-router-dom";
 import FormField from "./FormField";
-import files from "../../file";
-import { signupUser } from "./authService";
-import { message } from "antd";
 import { SparkleIcon, ArrowRightIcon } from "./AuthIcons";
+import { useState } from "react";
+import files from "../../file";
 
-const ArrowRightIcon = () => (
-    <svg width="16" height="16" viewBox="0 0 24 24" stroke="white" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-        <line x1="5" y1="12" x2="19" y2="12" />
-        <polyline points="12 5 19 12 12 19" />
-    </svg>
-);
-
-
-const SignupForm = () => {
+const UpdatePasswordPage = () => {
     const navigate = useNavigate();
-    const [form] = Form.useForm();
+    const location = useLocation();
+    const email = location.state?.email || "";
 
-    const handleMicrosoftLogin = () => {
-        let url = `${import.meta.env.VITE_BACKEND_URL}/api/ValidateAzureAD`;
-        window.location.href = url;
-    };
+    const [form] = Form.useForm();
 
     const [passwordValue, setPasswordValue] = useState("");
 
@@ -36,29 +24,19 @@ const SignupForm = () => {
 
     const onFinish = async (values) => {
         try {
-            const payload = {
-                email: values.email,
-                password: values.password,
-                confirm_password: values.confirmPassword,
-            };
-
-            await signupUser(payload);
-
-            message.success("Signup successful!");
-
-            navigate("/"); // go to login
+            console.log(values);
+            message.success("Password updated successfully");
+            navigate("/");
         } catch (error) {
-            message.error(
-                error?.response?.data?.detail || "Signup failed"
-            );
+            message.error("Update failed");
         }
     };
 
     return (
-        <div className="w-full max-w-[420px] px-9 py-4">
+        <div className="w-full max-w-[420px] px-9 py-8">
 
             {/* Logo */}
-            <div className="text-center mb-1">
+            <div className="text-center mb-2">
                 <div className="flex justify-center items-center gap-2">
                     <h1 className="text-2xl font-bold italic text-gray-800">Genie</h1>
                     <img src={files.ai_assistant_logo} alt="logo" />
@@ -69,9 +47,11 @@ const SignupForm = () => {
             </div>
 
             {/* Heading */}
-            <div className="text-center mb-0">
-                <h2 className="text-3xl text-gray-800 custom-font-jura">Sign Up</h2>
-                <p className="text-sm text-gray-400">Welcome! Let's set things up</p>
+            <div className="text-center mb-1">
+                <h2 className="text-3xl text-gray-800 custom-font-jura ">Update Password</h2>
+                <p className="text-sm text-gray-400">
+                    Verification code sent to {email}
+                </p>
             </div>
 
             {/* Form */}
@@ -83,21 +63,18 @@ const SignupForm = () => {
                 style={{ width: "100%" }}
             >
                 <FormField
-                    name="email"
-                    label="Email Address"
-                    placeholder="Enter your email"
+                    name="code"
+                    label="Verification Code"
+                    placeholder="Enter code"
                     required
-                    rules={[
-                        { required: true, message: "Email is required" },
-                        { type: "email", message: "Invalid email" },
-                    ]}
+                    rules={[{ required: true, message: "Code is required" }]}
                 />
 
                 <FormField
                     type="password"
                     name="password"
-                    label="Create Password"
-                    placeholder="Enter password"
+                    label="New Password"
+                    placeholder="Enter new password"
                     required
                     prefix={
                         <img
@@ -115,8 +92,8 @@ const SignupForm = () => {
                 <FormField
                     type="password"
                     name="confirmPassword"
-                    label="Confirm Password"
-                    placeholder="Confirm password"
+                    label="Confirm New Password"
+                    placeholder="Confirm new password"
                     required
                     prefix={
                         <img
@@ -133,13 +110,15 @@ const SignupForm = () => {
                                 if (!value || getFieldValue("password") === value) {
                                     return Promise.resolve();
                                 }
-                                return Promise.reject(new Error("Passwords do not match"));
+                                return Promise.reject(
+                                    new Error("Passwords do not match")
+                                );
                             },
                         }),
                     ]}
                 />
 
-                <p className="text-xs mb-2 text-gray-400 leading-4">
+                <p className="text-xs mb-5 text-gray-400 leading-5">
                     <span
                         className={
                             passwordChecks.lowercase ? "text-green-600 font-medium" : ""
@@ -180,36 +159,19 @@ const SignupForm = () => {
                         Minimum 12 characters
                     </span>
                 </p>
-
                 <Button
                     htmlType="submit"
                     className="!w-full !h-10 !bg-[#24A1DD] hover:!bg-sky-500 !text-white !rounded-md flex items-center justify-center gap-2"
                 >
-                    Sign Up <ArrowRightIcon />
+                    Update Password <ArrowRightIcon />
                 </Button>
             </Form>
 
-            {/* Divider */}
-            <div className="flex items-center gap-3 my-2">
-                <div className="flex-1 h-px bg-gray-200" />
-                <span className="text-[11px] text-gray-400 tracking-wide">OR SIGN UP WITH</span>
-                <div className="flex-1 h-px bg-gray-200" />
-            </div>
-
-            {/* Microsoft */}
-            <button
-                onClick={handleMicrosoftLogin}
-                className="flex items-center justify-center w-full gap-3 px-6 py-2 border border-blue-400 rounded-md bg-white hover:bg-blue-50 transition shadow-sm mb-3 cursor-pointer"
-            >
-                <img src={files.Microsoft_Icon} className="w-5 h-5" />
-                <span className="text-sm font-medium text-slate-700">Microsoft</span>
-            </button>
-
-            <p className="text-center text-sm text-gray-500">
-                Already have an account?{" "}
+            <p className="text-center text-sm text-gray-500 mt-4 cursor-pointer">
+                Back to{" "}
                 <button
                     onClick={() => navigate("/")}
-                    className="text-[#24A1DD] hover:underline cursor-pointer"
+                    className="text-[#24A1DD] hover:underline"
                 >
                     Log In
                 </button>
@@ -218,4 +180,4 @@ const SignupForm = () => {
     );
 };
 
-export default SignupForm;
+export default UpdatePasswordPage;
