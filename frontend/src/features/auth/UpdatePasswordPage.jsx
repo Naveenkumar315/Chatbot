@@ -1,9 +1,11 @@
-import { Form, Button, message } from "antd";
+import { Form, Button } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import FormField from "./FormField";
 import { SparkleIcon, ArrowRightIcon } from "./AuthIcons";
 import { useState } from "react";
 import files from "../../file";
+import { updatePassword } from "./authService";
+import toast from "react-hot-toast";
 
 const UpdatePasswordPage = () => {
     const navigate = useNavigate();
@@ -15,7 +17,7 @@ const UpdatePasswordPage = () => {
     const [passwordValue, setPasswordValue] = useState("");
 
     const passwordChecks = {
-        length: passwordValue.length >= 12,
+        length: passwordValue.length >= 8,
         uppercase: /[A-Z]/.test(passwordValue),
         lowercase: /[a-z]/.test(passwordValue),
         number: /[0-9]/.test(passwordValue),
@@ -25,10 +27,24 @@ const UpdatePasswordPage = () => {
     const onFinish = async (values) => {
         try {
             console.log(values);
-            message.success("Password updated successfully");
+            const payload = {
+                email,
+                code: values.code,
+                password: values.password,
+            };
+            const response = await updatePassword(payload);
+            if (response.message === "Invalid verification code") {
+                toast.error("Invalid verification code")
+                return
+            }
+            if (response.message === "Code expired") {
+                toast.error("Code expired")
+                return
+            }
+            toast.success("Password updated successfully");
             navigate("/");
         } catch (error) {
-            message.error("Update failed");
+            toast.error("Update failed");
         }
     };
 
@@ -67,7 +83,18 @@ const UpdatePasswordPage = () => {
                     label="Verification Code"
                     placeholder="Enter code"
                     required
-                    rules={[{ required: true, message: "Code is required" }]}
+                    rules={[
+                        { required: true, message: "Code is required" },
+                        { len: 6, message: "Code must be exactly 6 digits" },
+                        // { pattern: /^\d{6}$/, message: "Code must be 6 digits only" }
+                    ]}
+                    onKeyPress={(e) => {
+                        if (!/[0-9]/.test(e.key)) {
+                            e.preventDefault();
+                        }
+                    }}
+                    maxLength={6}
+                    autoComplete="one-time-code"
                 />
 
                 <FormField
@@ -156,7 +183,7 @@ const UpdatePasswordPage = () => {
                             passwordChecks.length ? "text-green-600 font-medium" : ""
                         }
                     >
-                        Minimum 12 characters
+                        Minimum 8 characters
                     </span>
                 </p>
                 <Button

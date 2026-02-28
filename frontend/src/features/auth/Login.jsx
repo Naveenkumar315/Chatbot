@@ -3,9 +3,8 @@ import { useNavigate } from "react-router-dom";
 import FormField from "./FormField";
 import files from "../../file";
 import { loginUser } from "./authService";
-import { message } from "antd";
 import { SparkleIcon, ArrowRightIcon } from "./AuthIcons";
-
+import toast from "react-hot-toast";
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -18,36 +17,27 @@ const LoginPage = () => {
 
     const onFinish = async (values) => {
         try {
-
-            message.loading({
-                content: "Logging in...",
-                key: "login"
-            });
-
             const response = await loginUser(values);
-
+            if (response.message === "Invalid credentials") {
+                toast.error("Invalid credentials")
+                return
+            }
+            sessionStorage.setItem(
+                "user",
+                JSON.stringify({
+                    email: response.email,
+                })
+            );
             //  store JWT
             localStorage.setItem(
                 "token",
                 response.access_token
             );
-
-            message.success({
-                content: "Login successful ",
-                key: "login",
-                duration: 2
-            });
-
+            toast.success("Login successful");
             navigate("/chat");
 
         } catch (error) {
-
-            message.error({
-                content:
-                    error?.response?.data?.detail ||
-                    "Login failed",
-                key: "login"
-            });
+            toast.error("Login failed", { id: "login" });
         }
     };
 

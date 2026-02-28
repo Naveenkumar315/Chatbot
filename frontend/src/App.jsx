@@ -9,27 +9,31 @@ import SSO from './features/auth/SSO';
 import ProtectedRoute from './features/auth/ProtectedRoute';
 import SignupForm from './features/auth/SignupForm';
 import AuthLayout from './features/auth/AuthLayout';
+import ToastProvider from './features/utils/ToastProvider';
 
 
 
 function App() {
 
   return (
-    <Routes>
-      <Route element={<AuthLayout />}>
-        <Route path="/" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupForm />} />
-        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="/update-password" element={<UpdatePasswordPage />} />
-      </Route>
-      <Route path="/sso" element={<SSO />} />
-
-      <Route element={<ProtectedRoute />}>
-        <Route element={<AppLayout />}>
-          <Route path="/chat" element={<ChatPage />} />
+    <>
+      <ToastProvider />
+      <Routes>
+        <Route element={<AuthLayout />}>
+          <Route path="/" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupForm />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/update-password" element={<UpdatePasswordPage />} />
         </Route>
-      </Route>
-    </Routes>
+        <Route path="/sso" element={<SSO />} />
+
+        <Route element={<ProtectedRoute />}>
+          <Route element={<AppLayout />}>
+            <Route path="/chat" element={<ChatPage />} />
+          </Route>
+        </Route>
+      </Routes>
+    </>
   );
 }
 

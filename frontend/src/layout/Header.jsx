@@ -3,6 +3,7 @@ import files from "../file";
 import { useSettingsStore } from "../features/chat/store/settings.store";
 import { useModeAnimation, ThemeAnimationType } from 'react-theme-switch-animation';
 import { Sun, Moon } from "lucide-react";
+import { useChartStore } from "../features/chat/store/chat.store";
 
 
 const Header = () => {
@@ -11,6 +12,7 @@ const Header = () => {
     const setCountry = useSettingsStore((s) => s.setCountry);
     const theme = useSettingsStore((s) => s.theme)
     const setTheme = useSettingsStore((s) => s.setTheme)
+    const clearMessage = useChartStore((s) => s.clearMessage)
 
     const { ref, toggleSwitchTheme } = useModeAnimation({
         duration: 500,
@@ -25,6 +27,9 @@ const Header = () => {
     };
 
     const handleLogout = () => {
+        sessionStorage.clear();
+        localStorage.removeItem("token");
+        clearMessage()
         navigate("/");
     };
 

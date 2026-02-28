@@ -28,7 +28,6 @@ const PDFPanel = () => {
 
         const fetchPdf = async () => {
             try {
-                debugger
                 const fullPath = pdfData.fullpath;
                 const filename = fullPath.split(/[/\\]/).pop();
                 const directory = fullPath.replace(/[/\\][^/\\]+$/, "");

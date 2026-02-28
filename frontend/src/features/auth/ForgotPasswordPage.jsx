@@ -1,8 +1,10 @@
-import { Form, Button, message } from "antd";
+import { Form, Button } from "antd";
 import { useNavigate } from "react-router-dom";
 import FormField from "./FormField";
 import { SparkleIcon, ArrowRightIcon } from "./AuthIcons";
 import files from "../../file";
+import { forgotPassword } from "./authService";
+import toast from "react-hot-toast";
 
 const ForgotPasswordPage = () => {
     const navigate = useNavigate();
@@ -10,11 +12,15 @@ const ForgotPasswordPage = () => {
 
     const onFinish = async (values) => {
         try {
-            console.log(values);
-            message.success("Verification code sent");
+            const response = await forgotPassword({ email: values.email });
+            if (response.message === "user not found") {
+                toast.error("Email not found");
+                return;
+            }
+            toast.success("Verification code sent");
             navigate("/update-password", { state: { email: values.email } });
         } catch (err) {
-            message.error("Something went wrong");
+            toast.error("Something went wrong");
         }
     };
 

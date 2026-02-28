@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 import FormField from "./FormField";
 import files from "../../file";
 import { signupUser } from "./authService";
-import { message } from "antd";
 import { SparkleIcon, ArrowRightIcon } from "./AuthIcons";
+import toast from "react-hot-toast";
 
 
 const SignupForm = () => {
@@ -20,7 +20,7 @@ const SignupForm = () => {
     const [passwordValue, setPasswordValue] = useState("");
 
     const passwordChecks = {
-        length: passwordValue.length >= 12,
+        length: passwordValue.length >= 8,
         uppercase: /[A-Z]/.test(passwordValue),
         lowercase: /[a-z]/.test(passwordValue),
         number: /[0-9]/.test(passwordValue),
@@ -37,11 +37,11 @@ const SignupForm = () => {
 
             await signupUser(payload);
 
-            message.success("Signup successful!");
+            toast.success("Signup successful!");
 
             navigate("/"); // go to login
         } catch (error) {
-            message.error(
+            toast.error(
                 error?.response?.data?.detail || "Signup failed"
             );
         }
@@ -170,7 +170,7 @@ const SignupForm = () => {
                             passwordChecks.length ? "text-green-600 font-medium" : ""
                         }
                     >
-                        Minimum 12 characters
+                        Minimum 8 characters
                     </span>
                 </p>
 
